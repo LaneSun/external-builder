@@ -29,7 +29,9 @@
     let isEditing = $state(false);
     let isDeleting = $state(false);
     let isSubmitting = $state(false);
+    let isTriggering = $state(false);
     let formError = $state<string | null>(null);
+    let triggerSuccess = $state<string | null>(null);
 
     // State for the edit form, initialized from the repo data
     let editData = $state({
@@ -143,6 +145,39 @@
             isSubmitting = false;
         }
     }
+
+    async function handleTrigger() {
+        if (isTriggering) return;
+        isTriggering = true;
+        formError = null;
+        triggerSuccess = null;
+
+        try {
+            const response = await fetch(`/api/repos/${repo.uuid}/trigger`, {
+                method: "POST",
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "触发构建失败。");
+            }
+
+            const result = await response.json();
+            triggerSuccess = "构建任务已创建并加入队列！";
+
+            // Clear success message after 5 seconds
+            setTimeout(() => {
+                triggerSuccess = null;
+            }, 5000);
+
+            // Refresh the page data to show the new task
+            await invalidateAll();
+        } catch (e) {
+            formError = e instanceof Error ? e.message : "发生未知错误。";
+        } finally {
+            isTriggering = false;
+        }
+    }
 </script>
 
 <main
@@ -169,6 +204,18 @@
             </div>
             <div class="flex items-center gap-2 self-start sm:self-center">
                 <button
+                    onclick={handleTrigger}
+                    disabled={isTriggering}
+                    class="flex items-center gap-2 px-3 py-2 rounded-lg font-semibold text-white bg-blue-600/80 hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    {#if isTriggering}
+                        <Loader class="animate-spin" size={16} />
+                    {:else}
+                        <Play size={16} />
+                    {/if}
+                    <span>{isTriggering ? "触发中..." : "触发构建"}</span>
+                </button>
+                <button
                     onclick={startEditing}
                     class="flex items-center gap-2 px-3 py-2 rounded-lg font-semibold text-white bg-gray-600/50 hover:bg-gray-600 transition-colors"
                 >
@@ -184,6 +231,16 @@
                 </button>
             </div>
         </div>
+
+        <!-- Success Message -->
+        {#if triggerSuccess}
+            <div
+                class="bg-green-500/10 border border-green-500/20 rounded-xl p-4 mb-6 flex items-center gap-3"
+            >
+                <CheckCircle class="text-green-400" size={20} />
+                <p class="text-green-400">{triggerSuccess}</p>
+            </div>
+        {/if}
 
         <!-- Edit Form -->
         {#if isEditing}
@@ -377,9 +434,8 @@
                 确认删除
             </h2>
             <p class="text-gray-400 mt-4">
-                您确定要删除仓库 <strong
-                    class="text-white">{repo.name}</strong
-                > 吗？这将删除其跟踪条目并从服务器删除本地克隆。此操作无法撤销。
+                您确定要删除仓库 <strong class="text-white">{repo.name}</strong>
+                吗？这将删除其跟踪条目并从服务器删除本地克隆。此操作无法撤销。
             </p>
 
             {#if formError}
