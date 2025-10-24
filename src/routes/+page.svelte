@@ -11,7 +11,7 @@
         History,
     } from "lucide-svelte";
 
-    let { data } = $props<PageData>();
+    let { data } = $props();
 
     /**
      * Formats a Unix timestamp into a human-readable local date and time string.
@@ -138,6 +138,7 @@
                     <div class="space-y-4">
                         {#if runningTasks.length > 0}
                             {#each runningTasks as task (task.uuid)}
+                                {@const Icon = getStatusIcon(task.status)}
                                 <div
                                     class="bg-gray-800 border border-gray-700 rounded-lg p-4 transition hover:border-blue-500/50"
                                 >
@@ -163,10 +164,7 @@
                                                 task.status,
                                             )}"
                                         >
-                                            <svelte:component
-                                                this={getStatusIcon(
-                                                    task.status,
-                                                )}
+                                            <Icon
                                                 size={14}
                                                 class={task.status === "running"
                                                     ? "animate-spin"
@@ -205,6 +203,7 @@
                     <div class="space-y-4">
                         {#if pendingTasks.length > 0}
                             {#each pendingTasks as task (task.uuid)}
+                                {@const Icon = getStatusIcon(task.status)}
                                 <div
                                     class="bg-gray-800 border border-gray-700 rounded-lg p-4 transition hover:border-yellow-500/50"
                                 >
@@ -230,12 +229,7 @@
                                                 task.status,
                                             )}"
                                         >
-                                            <svelte:component
-                                                this={getStatusIcon(
-                                                    task.status,
-                                                )}
-                                                size={14}
-                                            />
+                                            <Icon size={14} />
                                             <span class="capitalize font-medium"
                                                 >{task.status}</span
                                             >
@@ -271,6 +265,7 @@
                 <div class="space-y-4">
                     {#if recentCompletedTasks.length > 0}
                         {#each recentCompletedTasks as task (task.uuid)}
+                            {@const Icon = getStatusIcon(task.status)}
                             <div
                                 class="bg-gray-800 border border-gray-700 rounded-lg p-4 transition hover:border-gray-600"
                             >
@@ -291,10 +286,7 @@
                                             task.status,
                                         )}"
                                     >
-                                        <svelte:component
-                                            this={getStatusIcon(task.status)}
-                                            size={14}
-                                        />
+                                        <Icon size={14} />
                                         <span class="capitalize font-medium"
                                             >{task.status}</span
                                         >

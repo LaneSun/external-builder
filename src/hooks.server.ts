@@ -8,7 +8,7 @@ console.log("[Hooks] Setting up server hooks...");
 if (!building) {
   Deno.cron(
     "Build Queue Processor", // A name for the cron job
-    "*/10 * * * * *", // Run every 10 seconds
+    "*/10 * * * *", // Run every 10 seconds
     { backoffSchedule: [1000, 5000, 10000] }, // Optional: backoff on failure
     async () => {
       console.log("[Cron] Checking build queue...");
