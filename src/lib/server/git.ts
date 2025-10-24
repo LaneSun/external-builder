@@ -39,7 +39,7 @@ export async function isRepoCloned(repoUuid: string): Promise<boolean> {
  * @throws {Error} if GITLAB_TOKEN is not set.
  */
 function getAuthenticatedUrl(url: string): string {
-  const token = import.meta.env.GITLAB_TOKEN;
+  const token = Deno.env.get("GITLAB_TOKEN");
   if (!token) {
     throw new Error("GITLAB_TOKEN environment variable is not set.");
   }
@@ -87,7 +87,7 @@ export async function cloneRepo(
   } else {
     console.error(`[Git] Failed to clone ${repo.name}. Output:\n${output}`);
     // Clean up the failed clone attempt to prevent partial directories
-    await Deno.remove(repoPath, { recursive: true }).catch(() => {});
+    await Deno.remove(repoPath, { recursive: true }).catch(() => { });
     return { success: false, output };
   }
 }
