@@ -10,18 +10,18 @@ import type { Template } from '$lib/types';
  * Retrieves details for a specific build template.
  */
 export const GET: RequestHandler = async ({ params }) => {
-	try {
-		const template = await kv.getTemplate(params.uuid);
-		if (!template) {
-			throw error(404, `Template with UUID ${params.uuid} not found.`);
-		}
-		return json(template);
-	} catch (e) {
-		if (e && typeof e === 'object' && 'status' in e) throw e;
-		const errorMessage = e instanceof Error ? e.message : String(e);
-		console.error(`[API /api/templates/${params.uuid}] Error getting template:`, errorMessage);
-		throw error(500, `Failed to retrieve template: ${errorMessage}`);
-	}
+  try {
+    const template = await kv.getTemplate(params.uuid);
+    if (!template) {
+      throw error(404, `Template with UUID ${params.uuid} not found.`);
+    }
+    return json(template);
+  } catch (e) {
+    if (e && typeof e === 'object' && 'status' in e) throw e;
+    const errorMessage = e instanceof Error ? e.message : String(e);
+    console.error(`[API /api/templates/${params.uuid}] Error getting template:`, errorMessage);
+    throw error(500, `Failed to retrieve template: ${errorMessage}`);
+  }
 };
 
 /**
@@ -29,31 +29,36 @@ export const GET: RequestHandler = async ({ params }) => {
  * Updates an existing build template.
  */
 export const PUT: RequestHandler = async ({ params, request }) => {
-	try {
-		const template = await kv.getTemplate(params.uuid);
-		if (!template) {
-			throw error(404, `Template with UUID ${params.uuid} not found.`);
-		}
+  try {
+    const template = await kv.getTemplate(params.uuid);
+    if (!template) {
+      throw error(404, `Template with UUID ${params.uuid} not found.`);
+    }
 
-		const updates = await request.json();
+    const updates = await request.json();
 
-		const updatedTemplate: Template = {
-			...template,
-			...updates,
-			uuid: template.uuid, // Ensure UUID cannot be changed
-			updatedAt: Date.now()
-		};
+    // Validate executor if it's being updated
+    if (updates.executor && updates.executor !== 'cmd' && updates.executor !== 'bash') {
+      throw error(400, 'Invalid executor: must be "cmd" or "bash"');
+    }
 
-		await kv.updateTemplate(updatedTemplate);
-		console.log(`[API /api/templates/${params.uuid}] Updated template: ${updatedTemplate.name}`);
+    const updatedTemplate: Template = {
+      ...template,
+      ...updates,
+      uuid: template.uuid, // Ensure UUID cannot be changed
+      updatedAt: Date.now()
+    };
 
-		return json(updatedTemplate);
-	} catch (e) {
-		if (e && typeof e === 'object' && 'status' in e) throw e;
-		const errorMessage = e instanceof Error ? e.message : String(e);
-		console.error(`[API /api/templates/${params.uuid}] Error updating template:`, errorMessage);
-		throw error(500, `Failed to update template: ${errorMessage}`);
-	}
+    await kv.updateTemplate(updatedTemplate);
+    console.log(`[API /api/templates/${params.uuid}] Updated template: ${updatedTemplate.name}`);
+
+    return json(updatedTemplate);
+  } catch (e) {
+    if (e && typeof e === 'object' && 'status' in e) throw e;
+    const errorMessage = e instanceof Error ? e.message : String(e);
+    console.error(`[API /api/templates/${params.uuid}] Error updating template:`, errorMessage);
+    throw error(500, `Failed to update template: ${errorMessage}`);
+  }
 };
 
 /**
@@ -61,31 +66,31 @@ export const PUT: RequestHandler = async ({ params, request }) => {
  * Deletes a build template, only if it's not in use by any repository.
  */
 export const DELETE: RequestHandler = async ({ params }) => {
-	try {
-		const template = await kv.getTemplate(params.uuid);
-		if (!template) {
-			return new Response(null, { status: 204 });
-		}
+  try {
+    const template = await kv.getTemplate(params.uuid);
+    if (!template) {
+      return new Response(null, { status: 204 });
+    }
 
-		// Check if any repository is using this template
-		const repos = await kv.listRepos();
-		const usingRepos = repos.filter((r) => r.templateUuid === params.uuid);
-		if (usingRepos.length > 0) {
-			const repoNames = usingRepos.map((r) => r.name).join(', ');
-			throw error(
-				409,
-				`Template is in use by the following repositories and cannot be deleted: ${repoNames}`
-			);
-		}
+    // Check if any repository is using this template
+    const repos = await kv.listRepos();
+    const usingRepos = repos.filter((r) => r.templateUuid === params.uuid);
+    if (usingRepos.length > 0) {
+      const repoNames = usingRepos.map((r) => r.name).join(', ');
+      throw error(
+        409,
+        `Template is in use by the following repositories and cannot be deleted: ${repoNames}`
+      );
+    }
 
-		await kv.deleteTemplate(params.uuid);
-		console.log(`[API /api/templates/${params.uuid}] Deleted template: ${template.name}`);
+    await kv.deleteTemplate(params.uuid);
+    console.log(`[API /api/templates/${params.uuid}] Deleted template: ${template.name}`);
 
-		return new Response(null, { status: 204 });
-	} catch (e) {
-		if (e && typeof e === 'object' && 'status' in e) throw e;
-		const errorMessage = e instanceof Error ? e.message : String(e);
-		console.error(`[API /api/templates/${params.uuid}] Error deleting template:`, errorMessage);
-		throw error(500, `Failed to delete template: ${errorMessage}`);
-	}
+    return new Response(null, { status: 204 });
+  } catch (e) {
+    if (e && typeof e === 'object' && 'status' in e) throw e;
+    const errorMessage = e instanceof Error ? e.message : String(e);
+    console.error(`[API /api/templates/${params.uuid}] Error deleting template:`, errorMessage);
+    throw error(500, `Failed to delete template: ${errorMessage}`);
+  }
 };

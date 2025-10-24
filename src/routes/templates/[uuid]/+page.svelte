@@ -27,6 +27,7 @@
     let editData = $state({
         name: data.template.name,
         description: data.template.description,
+        executor: data.template.executor,
         script: data.template.script,
         timeout: data.template.timeout,
         resultPath: data.template.resultPath,
@@ -159,10 +160,31 @@
                 </div>
                 <div>
                     <label
+                        for="executor"
+                        class="block text-sm font-medium text-gray-400 mb-1"
+                    >
+                        执行器
+                    </label>
+                    <select
+                        id="executor"
+                        bind:value={editData.executor}
+                        class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    >
+                        <option value="cmd">CMD (Windows)</option>
+                        <option value="bash">Bash (Linux/Mac)</option>
+                    </select>
+                    <p class="text-xs text-gray-500 mt-1">
+                        选择用于执行构建脚本的命令解释器。
+                    </p>
+                </div>
+                <div>
+                    <label
                         for="script"
                         class="block text-sm font-medium text-gray-400 mb-1"
                     >
-                        构建脚本 (Windows CMD)
+                        构建脚本 ({editData.executor === "cmd"
+                            ? "Windows CMD"
+                            : "Bash"})
                     </label>
                     <textarea
                         id="script"

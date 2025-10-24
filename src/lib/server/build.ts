@@ -90,8 +90,12 @@ export async function executeBuild(taskUuid: string): Promise<void> {
     console.log(`[Build] Executing script for task ${task.uuid}`);
     const repoPath = git.getRepoPath(repo.uuid);
 
-    const scriptCommand = new Deno.Command("cmd.exe", {
-      args: ["/c", template.script],
+    // Choose executor based on template configuration
+    const executor = template.executor === "bash" ? "bash" : "cmd.exe";
+    const executorArg = template.executor === "bash" ? "-c" : "/c";
+
+    const scriptCommand = new Deno.Command(executor, {
+      args: [executorArg, template.script],
       cwd: repoPath,
       stdout: "piped",
       stderr: "piped",

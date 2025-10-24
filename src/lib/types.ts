@@ -37,6 +37,7 @@ export interface Template {
   uuid: string;
   name: string;
   description: string;
+  executor: "cmd" | "bash"; // Build script executor: cmd.exe or bash
   script: string; // Build script (e.g., for Windows cmd/PowerShell)
   timeout: number; // Build timeout in seconds
   resultPath: string; // Path to the build artifact (relative to repo root)

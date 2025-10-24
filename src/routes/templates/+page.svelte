@@ -25,6 +25,7 @@
     let newTemplate = $state({
         name: "",
         description: "",
+        executor: "cmd" as "cmd" | "bash",
         script: "",
         timeout: 600,
         resultPath: "",
@@ -36,6 +37,7 @@
     function resetForm() {
         newTemplate.name = "";
         newTemplate.description = "";
+        newTemplate.executor = "cmd";
         newTemplate.script = "npm install\\nnpm run build";
         newTemplate.timeout = 600;
         newTemplate.resultPath = "build/";
@@ -167,10 +169,31 @@
                     </div>
                     <div>
                         <label
+                            for="executor"
+                            class="block text-sm font-medium text-gray-400 mb-1"
+                        >
+                            执行器
+                        </label>
+                        <select
+                            id="executor"
+                            bind:value={newTemplate.executor}
+                            class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        >
+                            <option value="cmd">CMD (Windows)</option>
+                            <option value="bash">Bash (Linux/Mac)</option>
+                        </select>
+                        <p class="text-xs text-gray-500 mt-1">
+                            选择用于执行构建脚本的命令解释器。
+                        </p>
+                    </div>
+                    <div>
+                        <label
                             for="script"
                             class="block text-sm font-medium text-gray-400 mb-1"
                         >
-                            构建脚本（Windows CMD）
+                            构建脚本 ({newTemplate.executor === "cmd"
+                                ? "Windows CMD"
+                                : "Bash"})
                         </label>
                         <textarea
                             id="script"
@@ -180,7 +203,9 @@
                             class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 text-white placeholder-gray-500 font-mono text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                         ></textarea>
                         <p class="text-xs text-gray-500 mt-1">
-                            输入将在 `cmd.exe` 中运行的命令。
+                            输入将在 `{newTemplate.executor === "cmd"
+                                ? "cmd.exe"
+                                : "bash"}` 中运行的命令。
                         </p>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -276,9 +301,21 @@
                             class="flex flex-col sm:flex-row justify-between sm:items-start gap-3"
                         >
                             <div class="grow">
-                                <p class="font-bold text-lg text-white">
-                                    {template.name}
-                                </p>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <p class="font-bold text-lg text-white">
+                                        {template.name}
+                                    </p>
+                                    <span
+                                        class="px-2 py-0.5 rounded text-xs font-semibold {template.executor ===
+                                        'cmd'
+                                            ? 'bg-blue-500/20 text-blue-300'
+                                            : 'bg-green-500/20 text-green-300'}"
+                                    >
+                                        {template.executor === "cmd"
+                                            ? "CMD"
+                                            : "Bash"}
+                                    </span>
+                                </div>
                                 <p class="text-sm text-gray-400">
                                     {template.description || "无描述"}
                                 </p>
