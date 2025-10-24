@@ -72,6 +72,23 @@ export async function deleteTask(uuid: string): Promise<void> {
   await kv.delete(["tasks", uuid]);
 }
 
+/**
+ * Deletes all tasks associated with a specific repository UUID.
+ * @param repoUuid The repository UUID.
+ * @returns The number of tasks deleted.
+ */
+export async function deleteTasksByRepoUuid(repoUuid: string): Promise<number> {
+  const tasks = await listTasks({ repoUuid });
+  let deletedCount = 0;
+
+  for (const task of tasks) {
+    await deleteTask(task.uuid);
+    deletedCount++;
+  }
+
+  return deletedCount;
+}
+
 // --- Template Functions ---
 
 export async function getTemplate(uuid: string): Promise<Template | null> {
@@ -149,4 +166,74 @@ export async function dequeueTask(): Promise<string | null> {
   }
 
   return dequeuedTaskUuid;
+}
+
+/**
+ * Removes a specific task UUID from the queue.
+ * @param taskUuid The UUID of the task to remove.
+ * @returns True if the task was found and removed, false otherwise.
+ */
+export async function removeTaskFromQueue(taskUuid: string): Promise<boolean> {
+  let success = false;
+  let found = false;
+
+  while (!success) {
+    const res = await kv.get<string[]>(QUEUE_KEY);
+    const queue = res.value ?? [];
+
+    const index = queue.indexOf(taskUuid);
+    if (index !== -1) {
+      queue.splice(index, 1);
+      found = true;
+    } else {
+      return false; // Task not found in queue
+    }
+
+    // Use check to ensure atomicity
+    const atomicRes = await kv
+      .atomic()
+      .check(res)
+      .set(QUEUE_KEY, queue)
+      .commit();
+    success = atomicRes.ok;
+  }
+
+  return found;
+}
+
+/**
+ * Removes multiple task UUIDs from the queue.
+ * @param taskUuids Array of task UUIDs to remove.
+ * @returns The number of tasks successfully removed.
+ */
+export async function removeTasksFromQueue(taskUuids: string[]): Promise<number> {
+  let success = false;
+  let removedCount = 0;
+
+  while (!success) {
+    const res = await kv.get<string[]>(QUEUE_KEY);
+    const queue = res.value ?? [];
+
+    const filteredQueue = queue.filter(uuid => {
+      if (taskUuids.includes(uuid)) {
+        removedCount++;
+        return false;
+      }
+      return true;
+    });
+
+    if (removedCount === 0) {
+      return 0; // No tasks found in queue
+    }
+
+    // Use check to ensure atomicity
+    const atomicRes = await kv
+      .atomic()
+      .check(res)
+      .set(QUEUE_KEY, filteredQueue)
+      .commit();
+    success = atomicRes.ok;
+  }
+
+  return removedCount;
 }
