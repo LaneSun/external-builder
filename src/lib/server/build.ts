@@ -152,19 +152,19 @@ export async function executeBuild(taskUuid: string): Promise<void> {
     // Choose packaging command based on executor type
     let packageCommand: Deno.Command;
     if (template.executor === "bash") {
-      // Linux: use zip command
-      packageCommand = new Deno.Command("zip", {
-        args: ["-r", artifactDestPath, template.resultPath],
+      // Linux: use 7z command with silent output
+      packageCommand = new Deno.Command("7z", {
+        args: ["a", "-bd", "-bb0", artifactDestPath, template.resultPath],
         cwd: repoPath,
         stdout: "piped",
         stderr: "piped",
       });
     } else {
-      // CMD: use PowerShell for robust, built-in compression on Windows
+      // CMD: use PowerShell for robust, built-in compression on Windows with silent output
       packageCommand = new Deno.Command("powershell.exe", {
         args: [
           "-Command",
-          `Compress-Archive -Path "${artifactSourcePath}" -DestinationPath "${artifactDestPath}" -Force`,
+          `Compress-Archive -Path "${artifactSourcePath}" -DestinationPath "${artifactDestPath}" -Force | Out-Null`,
         ],
         stdout: "piped",
         stderr: "piped",
