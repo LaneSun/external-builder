@@ -65,11 +65,11 @@
         }
         const durationSeconds = Math.round((end - start) / 1000);
         if (durationSeconds < 60) {
-            return `${durationSeconds}s`;
+            return `${durationSeconds}秒`;
         }
         const minutes = Math.floor(durationSeconds / 60);
         const seconds = durationSeconds % 60;
-        return `${minutes}m ${seconds}s`;
+        return `${minutes}分 ${seconds}秒`;
     }
 
     const duration = $derived(
@@ -88,7 +88,7 @@
                     class="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors w-fit"
                 >
                     <ArrowLeft size={16} />
-                    Back to Repository: {repo.name}
+                    返回仓库: {repo.name}
                 </a>
             {:else}
                 <a
@@ -96,7 +96,7 @@
                     class="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors w-fit"
                 >
                     <ArrowLeft size={16} />
-                    Back to Dashboard
+                    返回仪表板
                 </a>
             {/if}
         </div>
@@ -106,9 +106,7 @@
             class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6"
         >
             <div>
-                <h1 class="text-3xl font-bold text-white">
-                    Build Task Details
-                </h1>
+                <h1 class="text-3xl font-bold text-white">构建任务详情</h1>
                 <p class="text-gray-500 flex items-center gap-2 mt-1">
                     <Hash size={16} />
                     {task.uuid}
@@ -121,7 +119,7 @@
                     download
                 >
                     <Download size={18} />
-                    <span>Download Artifact</span>
+                    <span>下载构件</span>
                 </a>
             {/if}
         </div>
@@ -133,7 +131,7 @@
                     class="text-sm font-medium text-gray-400 mb-2 flex items-center gap-2"
                 >
                     <CheckCircle size={16} />
-                    Status
+                    状态
                 </h2>
                 <div
                     class="flex items-center gap-2 text-lg px-3 py-1 rounded-full {getStatusClasses(
@@ -144,7 +142,17 @@
                         size={18}
                         class={task.status === "running" ? "animate-spin" : ""}
                     />
-                    <span class="capitalize font-semibold">{task.status}</span>
+                    <span class="capitalize font-semibold"
+                        >{task.status === "success"
+                            ? "成功"
+                            : task.status === "failed"
+                              ? "失败"
+                              : task.status === "running"
+                                ? "运行中"
+                                : task.status === "pending"
+                                  ? "待处理"
+                                  : task.status}</span
+                    >
                 </div>
             </div>
             <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-5">
@@ -152,7 +160,7 @@
                     class="text-sm font-medium text-gray-400 mb-2 flex items-center gap-2"
                 >
                     <PlayCircle size={16} />
-                    Created
+                    创建时间
                 </h2>
                 <p class="text-lg font-semibold text-white">
                     {formatTime(task.createdAt)}
@@ -163,7 +171,7 @@
                     class="text-sm font-medium text-gray-400 mb-2 flex items-center gap-2"
                 >
                     <StopCircle size={16} />
-                    Finished
+                    完成时间
                 </h2>
                 <p class="text-lg font-semibold text-white">
                     {formatTime(task.finishedAt)}
@@ -174,7 +182,7 @@
                     class="text-sm font-medium text-gray-400 mb-2 flex items-center gap-2"
                 >
                     <Timer size={16} />
-                    Duration
+                    持续时间
                 </h2>
                 <p class="text-lg font-semibold text-white">{duration}</p>
             </div>
@@ -189,7 +197,7 @@
                     class="text-xl font-semibold text-red-300 flex items-center gap-3"
                 >
                     <XCircle size={24} />
-                    Build Failed
+                    构建失败
                 </h2>
                 <p
                     class="font-mono bg-black/20 p-3 rounded-md mt-3 text-red-300"
@@ -204,7 +212,7 @@
             <h2
                 class="text-xl font-semibold text-white p-6 border-b border-gray-700"
             >
-                Build Logs
+                构建日志
             </h2>
             <div class="p-6">
                 <pre

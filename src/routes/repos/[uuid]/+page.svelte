@@ -108,16 +108,13 @@
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(
-                    errorData.message || "Failed to update repository.",
-                );
+                throw new Error(errorData.message || "更新仓库失败。");
             }
 
             isEditing = false;
             await invalidateAll();
         } catch (e) {
-            formError =
-                e instanceof Error ? e.message : "An unknown error occurred.";
+            formError = e instanceof Error ? e.message : "发生未知错误。";
         } finally {
             isSubmitting = false;
         }
@@ -134,16 +131,13 @@
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(
-                    errorData.message || "Failed to delete repository.",
-                );
+                throw new Error(errorData.message || "删除仓库失败。");
             }
 
             // On successful deletion, navigate back to the repos list
             await goto("/repos");
         } catch (e) {
-            formError =
-                e instanceof Error ? e.message : "An unknown error occurred.";
+            formError = e instanceof Error ? e.message : "发生未知错误。";
             isDeleting = false; // Close the modal but show the error
         } finally {
             isSubmitting = false;
@@ -161,7 +155,7 @@
                 class="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors w-fit"
             >
                 <ArrowLeft size={16} />
-                Back to Repositories
+                返回仓库
             </a>
         </div>
 
@@ -179,14 +173,14 @@
                     class="flex items-center gap-2 px-3 py-2 rounded-lg font-semibold text-white bg-gray-600/50 hover:bg-gray-600 transition-colors"
                 >
                     <Edit size={16} />
-                    <span>Edit</span>
+                    <span>编辑</span>
                 </button>
                 <button
                     onclick={() => (isDeleting = true)}
                     class="flex items-center gap-2 px-3 py-2 rounded-lg font-semibold text-white bg-red-600/80 hover:bg-red-600 transition-colors"
                 >
                     <Trash2 size={16} />
-                    <span>Delete</span>
+                    <span>删除</span>
                 </button>
             </div>
         </div>
@@ -196,15 +190,13 @@
             <div
                 class="bg-gray-800/50 border border-gray-700 rounded-xl p-6 mb-8"
             >
-                <h2 class="text-xl font-semibold mb-4 text-white">
-                    Edit Repository
-                </h2>
+                <h2 class="text-xl font-semibold mb-4 text-white">编辑仓库</h2>
                 <form onsubmit={handleUpdate} class="space-y-4">
                     <div>
                         <label
                             for="name"
                             class="block text-sm font-medium text-gray-400 mb-1"
-                            >Name</label
+                            >名称</label
                         >
                         <input
                             id="name"
@@ -218,7 +210,7 @@
                             <label
                                 for="branch"
                                 class="block text-sm font-medium text-gray-400 mb-1"
-                                >Branch</label
+                                >分支</label
                             >
                             <input
                                 id="branch"
@@ -231,7 +223,7 @@
                             <label
                                 for="template"
                                 class="block text-sm font-medium text-gray-400 mb-1"
-                                >Build Template</label
+                                >构建模板</label
                             >
                             <select
                                 id="template"
@@ -251,7 +243,7 @@
                         <div
                             class="bg-red-500/10 text-red-400 p-3 rounded-md text-sm"
                         >
-                            <strong>Error:</strong>
+                            <strong>错误:</strong>
                             {formError}
                         </div>
                     {/if}
@@ -262,7 +254,7 @@
                             onclick={() => (isEditing = false)}
                             class="px-5 py-2.5 rounded-lg font-semibold text-gray-300 bg-gray-600/50 hover:bg-gray-600 transition-colors"
                         >
-                            Cancel
+                            取消
                         </button>
                         <button
                             type="submit"
@@ -271,10 +263,10 @@
                         >
                             {#if isSubmitting}
                                 <Loader class="animate-spin" size={20} />
-                                <span>Saving...</span>
+                                <span>保存中...</span>
                             {:else}
                                 <Save size={20} />
-                                <span>Save Changes</span>
+                                <span>保存更改</span>
                             {/if}
                         </button>
                     </div>
@@ -284,7 +276,7 @@
 
         <!-- Build History -->
         <div class="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-            <h2 class="text-xl font-semibold mb-4 text-white">Build History</h2>
+            <h2 class="text-xl font-semibold mb-4 text-white">构建历史</h2>
             <div class="space-y-4">
                 {#if tasks.length > 0}
                     {#each tasks as task (task.uuid)}
@@ -308,11 +300,19 @@
                                             : ""}
                                     />
                                     <span class="capitalize font-medium"
-                                        >{task.status}</span
+                                        >{task.status === "success"
+                                            ? "成功"
+                                            : task.status === "failed"
+                                              ? "失败"
+                                              : task.status === "running"
+                                                ? "运行中"
+                                                : task.status === "pending"
+                                                  ? "待处理"
+                                                  : task.status}</span
                                     >
                                 </div>
                                 <div class="text-xs text-gray-500">
-                                    Task: {task.uuid.substring(0, 8)}
+                                    任务: {task.uuid.substring(0, 8)}
                                 </div>
                             </div>
                             <div
@@ -323,7 +323,7 @@
                                 >
                                     <History size={16} />
                                     <span
-                                        >Created: {formatTime(
+                                        >创建时间: {formatTime(
                                             task.createdAt,
                                         )}</span
                                     >
@@ -334,7 +334,7 @@
                                     >
                                         <CheckCircle size={16} />
                                         <span
-                                            >Finished: {formatTime(
+                                            >完成时间: {formatTime(
                                                 task.finishedAt,
                                             )}</span
                                         >
@@ -349,10 +349,10 @@
                     >
                         <History class="mx-auto text-gray-600" size={40} />
                         <h3 class="mt-4 text-lg font-semibold text-white">
-                            No Build History
+                            没有构建历史
                         </h3>
                         <p class="mt-1 text-gray-500">
-                            No builds have been run for this repository yet.
+                            此仓库还没有运行任何构建。
                         </p>
                     </div>
                 {/if}
@@ -374,20 +374,19 @@
         >
             <h2 class="text-2xl font-bold text-white flex items-center gap-3">
                 <AlertTriangle class="text-red-400" size={28} />
-                Confirm Deletion
+                确认删除
             </h2>
             <p class="text-gray-400 mt-4">
-                Are you sure you want to delete the repository <strong
+                您确定要删除仓库 <strong
                     class="text-white">{repo.name}</strong
-                >? This will remove its tracking entry and delete the local
-                clone from the server. This action cannot be undone.
+                > 吗？这将删除其跟踪条目并从服务器删除本地克隆。此操作无法撤销。
             </p>
 
             {#if formError}
                 <div
                     class="bg-red-500/10 text-red-400 p-3 rounded-md text-sm mt-4"
                 >
-                    <strong>Error:</strong>
+                    <strong>错误:</strong>
                     {formError}
                 </div>
             {/if}
@@ -398,7 +397,7 @@
                     disabled={isSubmitting}
                     class="px-5 py-2.5 rounded-lg font-semibold text-gray-300 bg-gray-600/50 hover:bg-gray-600 transition-colors disabled:opacity-50"
                 >
-                    Cancel
+                    取消
                 </button>
                 <button
                     onclick={handleDelete}
@@ -407,10 +406,10 @@
                 >
                     {#if isSubmitting}
                         <Loader class="animate-spin" size={20} />
-                        <span>Deleting...</span>
+                        <span>删除中...</span>
                     {:else}
                         <Trash2 size={20} />
-                        <span>Confirm Delete</span>
+                        <span>确认删除</span>
                     {/if}
                 </button>
             </div>

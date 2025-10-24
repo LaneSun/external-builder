@@ -66,7 +66,7 @@
             !newTemplate.successPattern
         ) {
             formError =
-                "Name, script, timeout, result path, and success pattern are required.";
+                "模板名称、脚本、超时时间、结果路径和成功模式是必需的。";
             isSubmitting = false;
             return;
         }
@@ -94,7 +94,7 @@
             await invalidateAll();
         } catch (e) {
             const errorMessage =
-                e instanceof Error ? e.message : "An unknown error occurred.";
+                e instanceof Error ? e.message : "发生未知错误。";
             console.error("Failed to add template:", errorMessage);
             formError = errorMessage;
         } finally {
@@ -108,7 +108,7 @@
 >
     <div class="max-w-7xl mx-auto">
         <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold text-white">Build Templates</h1>
+            <h1 class="text-3xl font-bold text-white">构建模板</h1>
             <button
                 onclick={() =>
                     showAddForm ? (showAddForm = false) : openAddForm()}
@@ -118,10 +118,10 @@
             >
                 {#if showAddForm}
                     <X size={18} />
-                    <span>Cancel</span>
+                    <span>取消</span>
                 {:else}
                     <Plus size={18} />
-                    <span>Add Template</span>
+                    <span>添加模板</span>
                 {/if}
             </button>
         </div>
@@ -132,7 +132,7 @@
                 class="bg-gray-800/50 border border-gray-700 rounded-xl p-6 mb-8"
             >
                 <h2 class="text-xl font-semibold mb-4 text-white">
-                    Add a New Build Template
+                    添加新的构建模板
                 </h2>
                 <form onsubmit={handleSubmit} class="space-y-4">
                     <div>
@@ -140,13 +140,13 @@
                             for="name"
                             class="block text-sm font-medium text-gray-400 mb-1"
                         >
-                            Template Name
+                            模板名称
                         </label>
                         <input
                             id="name"
                             type="text"
                             bind:value={newTemplate.name}
-                            placeholder="SvelteKit Static Build"
+                            placeholder="模板名称"
                             class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 text-white placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                         />
                     </div>
@@ -155,15 +155,13 @@
                             for="description"
                             class="block text-sm font-medium text-gray-400 mb-1"
                         >
-                            Description <span class="text-gray-500"
-                                >(Optional)</span
-                            >
+                            描述 <span class="text-gray-500">（可选）</span>
                         </label>
                         <input
                             id="description"
                             type="text"
                             bind:value={newTemplate.description}
-                            placeholder="Builds a SvelteKit project for a static adapter"
+                            placeholder="模板描述"
                             class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 text-white placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                         />
                     </div>
@@ -172,7 +170,7 @@
                             for="script"
                             class="block text-sm font-medium text-gray-400 mb-1"
                         >
-                            Build Script (Windows CMD)
+                            构建脚本（Windows CMD）
                         </label>
                         <textarea
                             id="script"
@@ -182,7 +180,7 @@
                             class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 text-white placeholder-gray-500 font-mono text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                         ></textarea>
                         <p class="text-xs text-gray-500 mt-1">
-                            Enter commands as they would be run in `cmd.exe`.
+                            输入将在 `cmd.exe` 中运行的命令。
                         </p>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -191,7 +189,7 @@
                                 for="resultPath"
                                 class="block text-sm font-medium text-gray-400 mb-1"
                             >
-                                Artifact Path
+                                工件路径
                             </label>
                             <input
                                 id="resultPath"
@@ -201,8 +199,7 @@
                                 class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 text-white placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                             />
                             <p class="text-xs text-gray-500 mt-1">
-                                Path to file/folder to be zipped, relative to
-                                repo root.
+                                要压缩的文件/文件夹的路径，相对于仓库根目录。
                             </p>
                         </div>
                         <div>
@@ -210,7 +207,7 @@
                                 for="timeout"
                                 class="block text-sm font-medium text-gray-400 mb-1"
                             >
-                                Timeout (seconds)
+                                超时时间（秒）
                             </label>
                             <input
                                 id="timeout"
@@ -225,7 +222,7 @@
                             for="successPattern"
                             class="block text-sm font-medium text-gray-400 mb-1"
                         >
-                            Success Pattern (Regex)
+                            成功模式（正则表达式）
                         </label>
                         <input
                             id="successPattern"
@@ -235,8 +232,7 @@
                             class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 text-white placeholder-gray-500 font-mono text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                         />
                         <p class="text-xs text-gray-500 mt-1">
-                            A case-insensitive regex pattern to match in the
-                            build logs to confirm success.
+                            一个不区分大小写的正则表达式模式，用于在构建日志中匹配以确认成功。
                         </p>
                     </div>
 
@@ -244,7 +240,7 @@
                         <div
                             class="bg-red-500/10 text-red-400 p-3 rounded-md text-sm"
                         >
-                            <strong>Error:</strong>
+                            <strong>错误:</strong>
                             {formError}
                         </div>
                     {/if}
@@ -257,10 +253,10 @@
                         >
                             {#if isSubmitting}
                                 <Loader class="animate-spin" size={20} />
-                                <span>Saving...</span>
+                                <span>保存中...</span>
                             {:else}
                                 <Save size={20} />
-                                <span>Save Template</span>
+                                <span>保存模板</span>
                             {/if}
                         </button>
                     </div>
@@ -284,7 +280,7 @@
                                     {template.name}
                                 </p>
                                 <p class="text-sm text-gray-400">
-                                    {template.description || "No description"}
+                                    {template.description || "无描述"}
                                 </p>
                             </div>
                             <div
@@ -308,10 +304,10 @@
                 >
                     <FileText class="mx-auto text-gray-600" size={40} />
                     <h3 class="mt-4 text-lg font-semibold text-white">
-                        No Build Templates
+                        没有构建模板
                     </h3>
                     <p class="mt-1 text-gray-500">
-                        Click "Add Template" to create your first build process.
+                        点击"添加模板"来创建您的第一个构建过程。
                     </p>
                 </div>
             {/if}

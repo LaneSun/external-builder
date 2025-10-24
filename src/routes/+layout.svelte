@@ -7,17 +7,17 @@
     let { children } = $props();
 
     /**
-     * Determines if a navigation link should be considered active based on the current URL path.
-     * @param path The path of the navigation link (e.g., '/repos').
-     * @returns True if the link is active, false otherwise.
+     * 根据当前URL路径确定导航链接是否应该被认为是活跃的。
+     * @param path 导航链接的路径（例如，'/repos'）。
+     * @returns 如果链接是活跃的则返回true，否则返回false。
      */
     function isActive(path: string) {
         const currentPath = $page.url.pathname;
-        // The root path should only be active for the exact URL.
+        // 根路径应该只对确切的URL是活跃的。
         if (path === "/") {
             return currentPath === "/";
         }
-        // For other paths, check if the current URL starts with the link's path.
+        // 对于其他路径，检查当前URL是否以链接的路径开头。
         return currentPath.startsWith(path);
     }
 </script>
@@ -56,7 +56,7 @@
                                 : "text-gray-400 hover:text-white hover:bg-gray-800/50",
                         ]}
                     >
-                        Dashboard
+                        仪表板
                     </a>
                     <a
                         href="/repos"
@@ -67,7 +67,7 @@
                                 : "text-gray-400 hover:text-white hover:bg-gray-800/50",
                         ]}
                     >
-                        Repositories
+                        仓库
                     </a>
                     <a
                         href="/templates"
@@ -78,7 +78,7 @@
                                 : "text-gray-400 hover:text-white hover:bg-gray-800/50",
                         ]}
                     >
-                        Templates
+                        模板
                     </a>
                 </div>
             </div>

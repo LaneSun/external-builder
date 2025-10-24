@@ -95,7 +95,7 @@
             !newRepo.branch ||
             !newRepo.templateUuid
         ) {
-            formError = "All fields are required.";
+            formError = "所有字段都是必需的。";
             isSubmitting = false;
             return;
         }
@@ -124,8 +124,8 @@
             await invalidateAll();
         } catch (e) {
             const errorMessage =
-                e instanceof Error ? e.message : "An unknown error occurred.";
-            console.error("Failed to add repository:", errorMessage);
+                e instanceof Error ? e.message : "发生未知错误。";
+            console.error("添加仓库失败:", errorMessage);
             formError = errorMessage;
         } finally {
             isSubmitting = false;
@@ -138,7 +138,7 @@
 >
     <div class="max-w-7xl mx-auto">
         <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold text-white">Tracked Repositories</h1>
+            <h1 class="text-3xl font-bold text-white">跟踪的仓库</h1>
             <button
                 onclick={() => (showAddForm = !showAddForm)}
                 class="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-white transition-colors {showAddForm
@@ -147,10 +147,10 @@
             >
                 {#if showAddForm}
                     <X size={18} />
-                    <span>Cancel</span>
+                    <span>取消</span>
                 {:else}
                     <Plus size={18} />
-                    <span>Add Repository</span>
+                    <span>添加仓库</span>
                 {/if}
             </button>
         </div>
@@ -161,7 +161,7 @@
                 class="bg-gray-800/50 border border-gray-700 rounded-xl p-6 mb-8"
             >
                 <h2 class="text-xl font-semibold mb-4 text-white">
-                    Add a New Repository
+                    添加新仓库
                 </h2>
                 <form onsubmit={handleSubmit} class="space-y-4">
                     <div>
@@ -169,13 +169,13 @@
                             for="name"
                             class="block text-sm font-medium text-gray-400 mb-1"
                         >
-                            Repository Name
+                            仓库名称
                         </label>
                         <input
                             id="name"
                             type="text"
                             bind:value={newRepo.name}
-                            placeholder="My Awesome Project"
+                            placeholder="我的项目"
                             class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 text-white placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                         />
                     </div>
@@ -184,7 +184,7 @@
                             for="gitlabUrl"
                             class="block text-sm font-medium text-gray-400 mb-1"
                         >
-                            GitLab Clone URL (HTTPS)
+                            GitLab 克隆 URL (HTTPS)
                         </label>
                         <input
                             id="gitlabUrl"
@@ -200,7 +200,7 @@
                                 for="branch"
                                 class="block text-sm font-medium text-gray-400 mb-1"
                             >
-                                Branch to Build
+                                要构建的分支
                             </label>
                             <input
                                 id="branch"
@@ -214,7 +214,7 @@
                                 for="template"
                                 class="block text-sm font-medium text-gray-400 mb-1"
                             >
-                                Build Template
+                                构建模板
                             </label>
                             <select
                                 id="template"
@@ -223,9 +223,7 @@
                                 class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50"
                             >
                                 {#if templates.length === 0}
-                                    <option value=""
-                                        >No templates available</option
-                                    >
+                                    <option value="">没有可用的模板</option>
                                 {:else}
                                     {#each templates as template (template.uuid)}
                                         <option value={template.uuid}
@@ -241,7 +239,7 @@
                         <div
                             class="bg-red-500/10 text-red-400 p-3 rounded-md text-sm"
                         >
-                            <strong>Error:</strong>
+                            <strong>错误:</strong>
                             {formError}
                         </div>
                     {/if}
@@ -254,10 +252,10 @@
                         >
                             {#if isSubmitting}
                                 <Loader class="animate-spin" size={20} />
-                                <span>Saving...</span>
+                                <span>保存中...</span>
                             {:else}
                                 <Save size={20} />
-                                <span>Save Repository</span>
+                                <span>保存仓库</span>
                             {/if}
                         </button>
                     </div>
@@ -298,7 +296,15 @@
                                         : ""}
                                 />
                                 <span class="capitalize font-medium"
-                                    >{repo.status}</span
+                                    >{repo.status === "idle"
+                                        ? "空闲"
+                                        : repo.status === "error"
+                                          ? "错误"
+                                          : repo.status === "building"
+                                            ? "构建中"
+                                            : repo.status === "cloning"
+                                              ? "克隆中"
+                                              : repo.status}</span
                                 >
                             </div>
                         </div>
@@ -308,7 +314,7 @@
                             <div class="flex items-center gap-2 text-gray-400">
                                 <GitBranch size={16} class="text-indigo-400" />
                                 <span
-                                    >Branch: <span
+                                    >分支: <span
                                         class="font-semibold text-gray-300"
                                         >{repo.branch}</span
                                     ></span
@@ -317,7 +323,7 @@
                             <div class="flex items-center gap-2 text-gray-400">
                                 <GitCommit size={16} class="text-gray-500" />
                                 <span
-                                    >Last Updated:
+                                    >最后更新:
                                     <span class="font-semibold text-gray-300"
                                         >{formatTime(repo.updatedAt)}</span
                                     ></span
@@ -332,10 +338,10 @@
                 >
                     <Server class="mx-auto text-gray-600" size={40} />
                     <h3 class="mt-4 text-lg font-semibold text-white">
-                        No Repositories Tracked
+                        没有跟踪的仓库
                     </h3>
                     <p class="mt-1 text-gray-500">
-                        Click "Add Repository" to start tracking a new project.
+                        点击"添加仓库"以开始跟踪新项目。
                     </p>
                 </div>
             {/if}

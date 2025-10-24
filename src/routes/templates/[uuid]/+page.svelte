@@ -53,17 +53,14 @@
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(
-                    errorData.message || "Failed to update template.",
-                );
+                throw new Error(errorData.message || "更新模板失败。");
             }
 
             // On success, refresh the data to show the updates
             await invalidateAll();
             // Optionally, show a success message or animation
         } catch (e) {
-            formError =
-                e instanceof Error ? e.message : "An unknown error occurred.";
+            formError = e instanceof Error ? e.message : "发生未知错误。";
         } finally {
             isSubmitting = false;
         }
@@ -81,16 +78,13 @@
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(
-                    errorData.message || "Failed to delete template.",
-                );
+                throw new Error(errorData.message || "删除模板失败。");
             }
 
             // On successful deletion, navigate back to the templates list
             await goto("/templates");
         } catch (e) {
-            formError =
-                e instanceof Error ? e.message : "An unknown error occurred.";
+            formError = e instanceof Error ? e.message : "发生未知错误。";
             isDeleting = false; // Close the modal but show the error on the main page
         } finally {
             isSubmitting = false;
@@ -108,7 +102,7 @@
                 class="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors w-fit"
             >
                 <ArrowLeft size={16} />
-                Back to Templates
+                返回模板
             </a>
         </div>
 
@@ -116,18 +110,18 @@
         <div
             class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-8"
         >
-            <h1 class="text-3xl font-bold text-white">Edit Template</h1>
+            <h1 class="text-3xl font-bold text-white">编辑模板</h1>
             <div class="flex items-center gap-2 self-start sm:self-center">
                 <button
                     onclick={() => (isDeleting = true)}
                     class="flex items-center gap-2 px-3 py-2 rounded-lg font-semibold text-white bg-red-600/80 hover:bg-red-600 transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed"
                     disabled={!usage.isDeletable}
                     title={!usage.isDeletable
-                        ? "This template is in use and cannot be deleted."
-                        : "Delete template"}
+                        ? "此模板正在使用中，无法删除。"
+                        : "删除模板"}
                 >
                     <Trash2 size={16} />
-                    <span>Delete</span>
+                    <span>删除</span>
                 </button>
             </div>
         </div>
@@ -140,7 +134,7 @@
                         for="name"
                         class="block text-sm font-medium text-gray-400 mb-1"
                     >
-                        Template Name
+                        模板名称
                     </label>
                     <input
                         id="name"
@@ -154,8 +148,7 @@
                         for="description"
                         class="block text-sm font-medium text-gray-400 mb-1"
                     >
-                        Description <span class="text-gray-500">(Optional)</span
-                        >
+                        描述 <span class="text-gray-500">(可选)</span>
                     </label>
                     <input
                         id="description"
@@ -169,7 +162,7 @@
                         for="script"
                         class="block text-sm font-medium text-gray-400 mb-1"
                     >
-                        Build Script (Windows CMD)
+                        构建脚本 (Windows CMD)
                     </label>
                     <textarea
                         id="script"
@@ -184,7 +177,7 @@
                             for="resultPath"
                             class="block text-sm font-medium text-gray-400 mb-1"
                         >
-                            Artifact Path
+                            工件路径
                         </label>
                         <input
                             id="resultPath"
@@ -193,8 +186,7 @@
                             class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 text-white placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                         />
                         <p class="text-xs text-gray-500 mt-1">
-                            Path to file/folder to be zipped, relative to repo
-                            root.
+                            要压缩的文件/文件夹的路径，相对于仓库根目录。
                         </p>
                     </div>
                     <div>
@@ -202,7 +194,7 @@
                             for="timeout"
                             class="block text-sm font-medium text-gray-400 mb-1"
                         >
-                            Timeout (seconds)
+                            超时时间 (秒)
                         </label>
                         <input
                             id="timeout"
@@ -217,7 +209,7 @@
                         for="successPattern"
                         class="block text-sm font-medium text-gray-400 mb-1"
                     >
-                        Success Pattern (Regex)
+                        成功模式 (正则表达式)
                     </label>
                     <input
                         id="successPattern"
@@ -226,8 +218,7 @@
                         class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 text-white placeholder-gray-500 font-mono text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     />
                     <p class="text-xs text-gray-500 mt-1">
-                        A case-insensitive regex pattern to match in logs to
-                        confirm success.
+                        一个不区分大小写的正则表达式模式，用于在日志中匹配以确认成功。
                     </p>
                 </div>
 
@@ -235,7 +226,7 @@
                     <div
                         class="bg-red-500/10 text-red-400 p-3 rounded-md text-sm"
                     >
-                        <strong>Error:</strong>
+                        <strong>错误:</strong>
                         {formError}
                     </div>
                 {/if}
@@ -246,15 +237,12 @@
                     >
                         <Info size={20} class="shrink-0 mt-0.5" />
                         <div>
-                            <h3 class="font-semibold">Template in Use</h3>
+                            <h3 class="font-semibold">模板正在使用中</h3>
                             <p class="mt-1">
-                                This template is currently used by {usage.usedBy
-                                    .length}
+                                此模板目前被 {usage.usedBy.length}
                                 {usage.usedBy.length === 1
-                                    ? "repository"
-                                    : "repositories"} and cannot be deleted. You
-                                must assign these repositories to a different template
-                                before deletion.
+                                    ? "个仓库"
+                                    : "个仓库"}使用，无法删除。在删除之前，您必须将这些仓库分配给不同的模板。
                             </p>
                             <ul class="list-disc pl-5 mt-2">
                                 {#each usage.usedBy as repo}
@@ -279,10 +267,10 @@
                     >
                         {#if isSubmitting}
                             <Loader class="animate-spin" size={20} />
-                            <span>Saving...</span>
+                            <span>保存中...</span>
                         {:else}
                             <Save size={20} />
-                            <span>Save Changes</span>
+                            <span>保存更改</span>
                         {/if}
                     </button>
                 </div>
@@ -304,12 +292,12 @@
         >
             <h2 class="text-2xl font-bold text-white flex items-center gap-3">
                 <AlertTriangle class="text-red-400" size={28} />
-                Confirm Deletion
+                确认删除
             </h2>
             <p class="text-gray-400 mt-4">
-                Are you sure you want to delete the template <strong
-                    class="text-white">{template.name}</strong
-                >? This action cannot be undone.
+                您确定要删除模板 <strong class="text-white"
+                    >{template.name}</strong
+                > 吗？此操作无法撤销。
             </p>
 
             <div class="flex justify-end gap-4 mt-8">
@@ -318,7 +306,7 @@
                     disabled={isSubmitting}
                     class="px-5 py-2.5 rounded-lg font-semibold text-gray-300 bg-gray-600/50 hover:bg-gray-600 transition-colors disabled:opacity-50"
                 >
-                    Cancel
+                    取消
                 </button>
                 <button
                     onclick={handleDelete}
@@ -327,10 +315,10 @@
                 >
                     {#if isSubmitting}
                         <Loader class="animate-spin" size={20} />
-                        <span>Deleting...</span>
+                        <span>删除中...</span>
                     {:else}
                         <Trash2 size={20} />
-                        <span>Confirm Delete</span>
+                        <span>确认删除</span>
                     {/if}
                 </button>
             </div>

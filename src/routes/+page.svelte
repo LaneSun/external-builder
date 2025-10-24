@@ -70,7 +70,7 @@
     class="p-4 sm:p-6 lg:p-8 bg-gray-900 text-gray-300 min-h-screen font-sans"
 >
     <div class="max-w-7xl mx-auto">
-        <h1 class="text-3xl font-bold mb-6 text-white">Dashboard</h1>
+        <h1 class="text-3xl font-bold mb-6 text-white">仪表板</h1>
 
         <!-- Summary Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
@@ -84,7 +84,7 @@
                 </div>
                 <div>
                     <h2 class="text-sm font-medium text-gray-400">
-                        Tracked Repositories
+                        跟踪的仓库
                     </h2>
                     <p class="text-3xl font-semibold text-white mt-1">
                         {summary.trackedReposCount}
@@ -101,7 +101,7 @@
                 </div>
                 <div>
                     <h2 class="text-sm font-medium text-gray-400">
-                        Running Tasks
+                        运行中的任务
                     </h2>
                     <p class="text-3xl font-semibold text-blue-400 mt-1">
                         {summary.runningTasksCount}
@@ -117,9 +117,7 @@
                     <Clock class="text-yellow-400" size={24} />
                 </div>
                 <div>
-                    <h2 class="text-sm font-medium text-gray-400">
-                        In Build Queue
-                    </h2>
+                    <h2 class="text-sm font-medium text-gray-400">构建队列</h2>
                     <p class="text-3xl font-semibold text-yellow-400 mt-1">
                         {summary.pendingTasksCount}
                     </p>
@@ -133,7 +131,7 @@
             <div class="space-y-8">
                 <section>
                     <h2 class="text-xl font-semibold mb-4 text-white">
-                        Active Builds
+                        活跃的构建
                     </h2>
                     <div class="space-y-4">
                         {#if runningTasks.length > 0}
@@ -153,7 +151,7 @@
                                                 href="/task/{task.uuid}"
                                                 class="text-xs text-gray-500 hover:text-gray-300 transition"
                                             >
-                                                Task: {task.uuid.substring(
+                                                任务: {task.uuid.substring(
                                                     0,
                                                     8,
                                                 )}
@@ -176,7 +174,7 @@
                                         </div>
                                     </div>
                                     <div class="text-xs text-gray-400 mt-3">
-                                        Started: {formatTime(task.startedAt)}
+                                        开始时间: {formatTime(task.startedAt)}
                                     </div>
                                 </div>
                             {/each}
@@ -189,7 +187,7 @@
                                     size={32}
                                 />
                                 <p class="mt-2 text-gray-500">
-                                    No tasks are currently running.
+                                    当前没有任务运行。
                                 </p>
                             </div>
                         {/if}
@@ -198,7 +196,7 @@
 
                 <section>
                     <h2 class="text-xl font-semibold mb-4 text-white">
-                        Build Queue
+                        构建队列
                     </h2>
                     <div class="space-y-4">
                         {#if pendingTasks.length > 0}
@@ -218,7 +216,7 @@
                                                 href="/task/{task.uuid}"
                                                 class="text-xs text-gray-500 hover:text-gray-300 transition"
                                             >
-                                                Task: {task.uuid.substring(
+                                                任务: {task.uuid.substring(
                                                     0,
                                                     8,
                                                 )}
@@ -236,7 +234,7 @@
                                         </div>
                                     </div>
                                     <div class="text-xs text-gray-400 mt-3">
-                                        Created: {formatTime(task.createdAt)}
+                                        创建时间: {formatTime(task.createdAt)}
                                     </div>
                                 </div>
                             {/each}
@@ -248,9 +246,7 @@
                                     class="mx-auto text-gray-600"
                                     size={32}
                                 />
-                                <p class="mt-2 text-gray-500">
-                                    The build queue is empty.
-                                </p>
+                                <p class="mt-2 text-gray-500">构建队列为空。</p>
                             </div>
                         {/if}
                     </div>
@@ -260,7 +256,7 @@
             <!-- Right Column: Recent History -->
             <section>
                 <h2 class="text-xl font-semibold mb-4 text-white">
-                    Recent Build History
+                    最近构建历史
                 </h2>
                 <div class="space-y-4">
                     {#if recentCompletedTasks.length > 0}
@@ -278,7 +274,7 @@
                                             href="/task/{task.uuid}"
                                             class="text-xs text-gray-500 hover:text-gray-300 transition"
                                         >
-                                            Task: {task.uuid.substring(0, 8)}
+                                            任务: {task.uuid.substring(0, 8)}
                                         </a>
                                     </div>
                                     <div
@@ -293,7 +289,7 @@
                                     </div>
                                 </div>
                                 <div class="text-xs text-gray-400 mt-3">
-                                    Finished: {formatTime(task.finishedAt)}
+                                    完成时间: {formatTime(task.finishedAt)}
                                 </div>
                             </div>
                         {/each}
@@ -303,7 +299,7 @@
                         >
                             <History class="mx-auto text-gray-600" size={32} />
                             <p class="mt-2 text-gray-500">
-                                No recent build history.
+                                没有最近的构建历史。
                             </p>
                         </div>
                     {/if}
