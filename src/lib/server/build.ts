@@ -149,21 +149,34 @@ export async function executeBuild(taskUuid: string): Promise<void> {
 
     await Deno.mkdir(taskBuildDir, { recursive: true });
 
-    // Using PowerShell for robust, built-in compression on Windows
-    const packageCommand = new Deno.Command("powershell.exe", {
-      args: [
-        "-Command",
-        `Compress-Archive -Path "${artifactSourcePath}" -DestinationPath "${artifactDestPath}" -Force`,
-      ],
-      stdout: "piped",
-      stderr: "piped",
-    });
+    // Choose packaging command based on executor type
+    let packageCommand: Deno.Command;
+    if (template.executor === "bash") {
+      // Linux: use zip command
+      packageCommand = new Deno.Command("zip", {
+        args: ["-r", artifactDestPath, template.resultPath],
+        cwd: repoPath,
+        stdout: "piped",
+        stderr: "piped",
+      });
+    } else {
+      // CMD: use PowerShell for robust, built-in compression on Windows
+      packageCommand = new Deno.Command("powershell.exe", {
+        args: [
+          "-Command",
+          `Compress-Archive -Path "${artifactSourcePath}" -DestinationPath "${artifactDestPath}" -Force`,
+        ],
+        stdout: "piped",
+        stderr: "piped",
+      });
+    }
 
     const packageOutput = await packageCommand.output();
     const packageLogs =
       new TextDecoder().decode(packageOutput.stdout) +
       new TextDecoder().decode(packageOutput.stderr);
     logs += packageLogs + "\n";
+    console.log("logs:", logs);
     await kv.updateTask({ ...task, logs });
 
     if (packageOutput.code !== 0) {
