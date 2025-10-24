@@ -1,7 +1,7 @@
 // src/lib/server/build.ts
 
-import * as kv from "$lib/server/kv";
-import * as git from "$lib/server/git";
+import * as kv from "$lib/server/kv.server";
+import * as git from "$lib/server/git.server";
 import type { Repo, Task, Template } from "$lib/types";
 import { join } from "node:path";
 

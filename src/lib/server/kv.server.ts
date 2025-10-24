@@ -1,8 +1,10 @@
 import type { Repo, Task, Template } from "$lib/types";
+import { openKv } from "rakiyu-deno-kv";
 
 // Initialize Deno KV.
 // You can specify a path in your .env file, e.g., KV_PATH=./builder/kv.db
-const kv = await Deno.openKv(import.meta.env.KV_PATH);
+await Deno.mkdir("./builder", { recursive: true });
+const kv = await openKv("./builder/kv.db");
 
 // --- Repo Functions ---
 

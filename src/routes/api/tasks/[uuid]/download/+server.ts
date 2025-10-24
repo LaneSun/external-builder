@@ -2,7 +2,7 @@
 
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import * as kv from '$lib/server/kv';
+import * as kv from '$lib/server/kv.server';
 import { join } from 'node:path';
 
 const BUILDS_DIR = join(Deno.cwd(), 'builder', 'builds');

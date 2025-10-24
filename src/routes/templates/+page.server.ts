@@ -1,7 +1,7 @@
 // external-builder/src/routes/templates/+page.server.ts
 
 import { error } from '@sveltejs/kit';
-import * as kv from '$lib/server/kv';
+import * as kv from '$lib/server/kv.server';
 import type { PageServerLoad } from './$types';
 
 /**

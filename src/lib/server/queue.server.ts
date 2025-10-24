@@ -1,7 +1,7 @@
 // src/lib/server/queue.ts
 
-import * as kv from "$lib/server/kv";
-import { executeBuild } from "$lib/server/build";
+import * as kv from "$lib/server/kv.server";
+import { executeBuild } from "$lib/server/build.server";
 
 /**
  * Counts the number of tasks currently in the 'running' state.
@@ -20,7 +20,7 @@ async function getRunningTasksCount(): Promise<number> {
  */
 export async function processQueue(): Promise<void> {
   const maxConcurrentTasks = parseInt(
-    import.meta.env.MAX_CONCURRENT_TASKS || "2",
+    Deno.env.get("MAX_CONCURRENT_TASKS") || "2",
     10,
   );
 

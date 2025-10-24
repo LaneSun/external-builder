@@ -38,7 +38,7 @@
         newTemplate.name = "";
         newTemplate.description = "";
         newTemplate.executor = "cmd";
-        newTemplate.script = "npm install\\nnpm run build";
+        newTemplate.script = "npm install\nnpm run build";
         newTemplate.timeout = 600;
         newTemplate.resultPath = "build/";
         newTemplate.successPattern = "build complete";

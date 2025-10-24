@@ -2,8 +2,8 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import * as kv from '$lib/server/kv';
-import { getRepoPath } from '$lib/server/git';
+import * as kv from '$lib/server/kv.server';
+import { getRepoPath } from '$lib/server/git.server';
 import type { Repo } from '$lib/types';
 
 /**

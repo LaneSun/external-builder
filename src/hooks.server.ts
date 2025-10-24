@@ -1,7 +1,7 @@
 // src/hooks.server.ts
-import { processQueue } from "$lib/server/queue";
+import { processQueue } from "$lib/server/queue.server";
 import { building } from "$app/environment";
-import * as kv from "$lib/server/kv";
+import * as kv from "$lib/server/kv.server";
 
 console.log("[Hooks] Setting up server hooks...");
 
