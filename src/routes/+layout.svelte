@@ -3,6 +3,7 @@
     import favicon from "$lib/assets/favicon.svg";
     import { page } from "$app/stores";
     import { GitFork } from "lucide-svelte";
+    import { ModeWatcher } from "mode-watcher";
 
     let { children } = $props();
 
@@ -26,6 +27,8 @@
     <link rel="icon" href={favicon} />
     <title>External Builder</title>
 </svelte:head>
+
+<ModeWatcher />
 
 <div class="min-h-screen bg-gray-900 text-gray-300 font-sans">
     <!-- Sticky Navigation Header -->

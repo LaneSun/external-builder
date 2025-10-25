@@ -7,14 +7,8 @@ export default defineConfig({
   plugins: [
     tailwindcss(),
     sveltekit(),
-    devtoolsJson()
+    devtoolsJson(),
   ],
-  ssr: {
-    external: [
-      'rakiyu-deno-kv',
-      'rakiyu-deno-kv-linux-x64-gnu'
-    ]
-  },
   test: {
     expect: { requireAssertions: true },
     projects: [

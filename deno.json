@@ -3,7 +3,9 @@
   "compilerOptions": {
     "lib": ["dom", "esnext", "deno.window", "deno.unstable"]
   },
+  "nodeModulesDir": "manual",
   "imports": {
+    "@std/http": "jsr:@std/http",
     "$lib": "./src/lib",
     "$lib/": "./src/lib/"
   },

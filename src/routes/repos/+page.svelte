@@ -141,7 +141,7 @@
             <h1 class="text-3xl font-bold text-white">跟踪的仓库</h1>
             <button
                 onclick={() => (showAddForm = !showAddForm)}
-                class="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-white transition-colors {showAddForm
+                class="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-black dark:text-white transition-colors {showAddForm
                     ? 'bg-red-500/80 hover:bg-red-500'
                     : 'bg-indigo-500 hover:bg-indigo-600'}"
             >
