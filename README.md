@@ -1,4 +1,4 @@
-# Offline GitLab Webhook Build Server
+# External Builder
 
 一个用于离线 GitLab 实例的构建服务器，通过接收 Webhook 事件自动触发构建任务。
 
