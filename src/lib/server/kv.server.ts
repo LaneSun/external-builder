@@ -10,13 +10,28 @@ const kv = await openKv("./builder/kv.db");
 
 export async function getRepo(uuid: string): Promise<Repo | null> {
   const res = await kv.get<Repo>(["repos", uuid]);
-  return res.value;
+  const repo = res.value;
+  if (!repo) return null;
+
+  // Add backward compatibility for trigger field
+  if (!repo.trigger) {
+    repo.trigger = "push";
+  }
+
+  return repo;
 }
 
 export async function listRepos(): Promise<Repo[]> {
   const repos: Repo[] = [];
   for await (const entry of kv.list<Repo>({ prefix: ["repos"] })) {
-    repos.push(entry.value);
+    const repo = entry.value;
+
+    // Add backward compatibility for trigger field
+    if (!repo.trigger) {
+      repo.trigger = "push";
+    }
+
+    repos.push(repo);
   }
   return repos.sort((a, b) => b.createdAt - a.createdAt);
 }

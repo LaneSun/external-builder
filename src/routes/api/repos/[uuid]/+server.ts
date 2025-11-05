@@ -33,7 +33,8 @@ export const GET: RequestHandler = async ({ params }) => {
  * {
  *   "name": "New Name",
  *   "branch": "develop",
- *   "templateUuid": "..."
+ *   "templateUuid": "...",
+ *   "trigger": "push" | "tag" | "manual"
  * }
  */
 export const PUT: RequestHandler = async ({ params, request }) => {
@@ -50,6 +51,13 @@ export const PUT: RequestHandler = async ({ params, request }) => {
       const template = await kv.getTemplate(updates.templateUuid);
       if (!template) {
         throw error(400, `Invalid templateUuid: ${updates.templateUuid} not found.`);
+      }
+    }
+
+    // Validate trigger if provided
+    if (updates.trigger) {
+      if (!['push', 'tag', 'manual'].includes(updates.trigger)) {
+        throw error(400, 'Invalid trigger value: must be "push", "tag", or "manual"');
       }
     }
 

@@ -15,6 +15,7 @@
         ArrowLeft,
         History,
         Play,
+        Zap,
     } from "lucide-svelte";
     import type { Repo, Template, Task } from "$lib/types";
     import { invalidateAll, goto } from "$app/navigation";
@@ -38,6 +39,7 @@
         name: data.repo.name,
         branch: data.repo.branch,
         templateUuid: data.repo.templateUuid,
+        trigger: data.repo.trigger || "push",
     });
 
     // --- Helper Functions ---
@@ -85,10 +87,24 @@
         return new Date(timestamp).toLocaleString();
     }
 
+    function formatTrigger(trigger: Repo["trigger"]) {
+        switch (trigger) {
+            case "push":
+                return "Push 事件";
+            case "tag":
+                return "新 Tag 时";
+            case "manual":
+                return "仅手动";
+            default:
+                return trigger;
+        }
+    }
+
     function startEditing() {
         editData.name = repo.name;
         editData.branch = repo.branch;
         editData.templateUuid = repo.templateUuid;
+        editData.trigger = repo.trigger || "push";
         formError = null;
         isEditing = true;
     }
@@ -295,6 +311,22 @@
                             </select>
                         </div>
                     </div>
+                    <div>
+                        <label
+                            for="trigger"
+                            class="block text-sm font-medium text-gray-400 mb-1"
+                            >触发条件</label
+                        >
+                        <select
+                            id="trigger"
+                            bind:value={editData.trigger}
+                            class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        >
+                            <option value="push">Push 事件</option>
+                            <option value="tag">新 Tag 时</option>
+                            <option value="manual">仅手动触发</option>
+                        </select>
+                    </div>
 
                     {#if formError}
                         <div
@@ -328,6 +360,62 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        {/if}
+
+        <!-- Repository Information -->
+        {#if !isEditing}
+            <div
+                class="bg-gray-800/50 border border-gray-700 rounded-xl p-6 mb-6"
+            >
+                <h2 class="text-xl font-semibold mb-4 text-white">仓库信息</h2>
+                <div
+                    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+                >
+                    <div class="flex items-center gap-2 text-gray-400">
+                        <GitBranch size={16} class="text-indigo-400" />
+                        <span class="text-sm">
+                            分支: <span class="font-semibold text-gray-300"
+                                >{repo.branch}</span
+                            >
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-2 text-gray-400">
+                        <Zap size={16} class="text-yellow-500" />
+                        <span class="text-sm">
+                            触发: <span class="font-semibold text-gray-300"
+                                >{formatTrigger(repo.trigger)}</span
+                            >
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-2 text-gray-400">
+                        <Server size={16} class="text-purple-400" />
+                        <span class="text-sm">
+                            模板: <span class="font-semibold text-gray-300"
+                                >{templates.find(
+                                    (t: Template) =>
+                                        t.uuid === repo.templateUuid,
+                                )?.name || "未知"}</span
+                            >
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-2 text-gray-400">
+                        <GitCommit size={16} class="text-gray-500" />
+                        <span class="text-sm">
+                            状态: <span class="font-semibold text-gray-300"
+                                >{repo.status === "idle"
+                                    ? "空闲"
+                                    : repo.status === "error"
+                                      ? "错误"
+                                      : repo.status === "building"
+                                        ? "构建中"
+                                        : repo.status === "cloning"
+                                          ? "克隆中"
+                                          : repo.status}</span
+                            >
+                        </span>
+                    </div>
+                </div>
             </div>
         {/if}
 

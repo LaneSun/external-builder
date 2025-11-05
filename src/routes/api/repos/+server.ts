@@ -30,16 +30,22 @@ export const GET: RequestHandler = async () => {
  *   "name": "My Project",
  *   "gitlabUrl": "https://gitlab.com/user/project.git",
  *   "branch": "main",
- *   "templateUuid": "..."
+ *   "templateUuid": "...",
+ *   "trigger": "push" | "tag" | "manual"
  * }
  */
 export const POST: RequestHandler = async ({ request }) => {
   try {
-    const { name, gitlabUrl, branch, templateUuid } = await request.json();
+    const { name, gitlabUrl, branch, templateUuid, trigger = 'push' } = await request.json();
 
     // Basic validation
     if (!name || !gitlabUrl || !branch || !templateUuid) {
       throw error(400, 'Missing required fields: name, gitlabUrl, branch, templateUuid');
+    }
+
+    // Validate trigger value
+    if (!['push', 'tag', 'manual'].includes(trigger)) {
+      throw error(400, 'Invalid trigger value: must be "push", "tag", or "manual"');
     }
 
     // Check if template exists
@@ -60,6 +66,7 @@ export const POST: RequestHandler = async ({ request }) => {
       gitlabUrl,
       branch,
       templateUuid,
+      trigger: trigger as 'push' | 'tag' | 'manual',
       status: 'cloning', // Initial status
       createdAt: Date.now(),
       updatedAt: Date.now()

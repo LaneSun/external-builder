@@ -9,6 +9,7 @@ export interface Repo {
   gitlabUrl: string; // GitLab repository URL
   branch: string; // Default branch to build
   templateUuid: string; // Associated build template
+  trigger: "push" | "tag" | "manual"; // When to trigger builds
   status: "idle" | "cloning" | "building" | "error";
   lastBuildTaskUuid?: string; // UUID of the last build task
   createdAt: number; // Timestamp of creation

@@ -12,6 +12,7 @@
         CheckCircle,
         XCircle,
         AlertTriangle,
+        Zap,
     } from "lucide-svelte";
     import type { Repo, Template } from "$lib/types";
     import { invalidateAll } from "$app/navigation";
@@ -32,6 +33,7 @@
         gitlabUrl: "",
         branch: "main",
         templateUuid: data.templates.length > 0 ? data.templates[0].uuid : "",
+        trigger: "push",
     });
 
     // --- Helper Functions ---
@@ -71,11 +73,25 @@
         return new Date(timestamp).toLocaleString();
     }
 
+    function formatTrigger(trigger: Repo["trigger"]) {
+        switch (trigger) {
+            case "push":
+                return "Push 事件";
+            case "tag":
+                return "新 Tag 时";
+            case "manual":
+                return "仅手动";
+            default:
+                return trigger;
+        }
+    }
+
     function resetForm() {
         newRepo.name = "";
         newRepo.gitlabUrl = "";
         newRepo.branch = "main";
         newRepo.templateUuid = templates.length > 0 ? templates[0].uuid : "";
+        newRepo.trigger = "push";
         formError = null;
         isSubmitting = false;
     }
@@ -234,6 +250,23 @@
                             </select>
                         </div>
                     </div>
+                    <div>
+                        <label
+                            for="trigger"
+                            class="block text-sm font-medium text-gray-400 mb-1"
+                        >
+                            触发条件
+                        </label>
+                        <select
+                            id="trigger"
+                            bind:value={newRepo.trigger}
+                            class="w-full bg-gray-900 border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        >
+                            <option value="push">Push 事件</option>
+                            <option value="tag">新 Tag 时</option>
+                            <option value="manual">仅手动触发</option>
+                        </select>
+                    </div>
 
                     {#if formError}
                         <div
@@ -326,6 +359,15 @@
                                     >最后更新:
                                     <span class="font-semibold text-gray-300"
                                         >{formatTime(repo.updatedAt)}</span
+                                    ></span
+                                >
+                            </div>
+                            <div class="flex items-center gap-2 text-gray-400">
+                                <Zap size={16} class="text-yellow-500" />
+                                <span
+                                    >触发: <span
+                                        class="font-semibold text-gray-300"
+                                        >{formatTrigger(repo.trigger)}</span
                                     ></span
                                 >
                             </div>

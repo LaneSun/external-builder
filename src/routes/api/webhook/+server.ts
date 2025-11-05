@@ -10,7 +10,7 @@ import type { Task } from '$lib/types';
  */
 interface GitLabPushEvent {
   object_kind: string;
-  ref: string; // e.g., "refs/heads/main"
+  ref: string; // e.g., "refs/heads/main" or "refs/tags/v1.0.0"
   project: {
     git_http_url: string;
   };
@@ -23,13 +23,14 @@ export const POST: RequestHandler = async ({ request }) => {
   try {
     const payload = (await request.json()) as GitLabPushEvent;
 
-    // 1. We only care about push events.
+    // 1. We only care about push events (which includes tag pushes in GitLab).
     if (payload.object_kind !== 'push') {
       return json({ message: 'Ignoring event: not a push' }, { status: 200 });
     }
 
     const gitlabUrl = payload.project.git_http_url;
-    const branch = payload.ref.replace('refs/heads/', '');
+    const isTag = payload.ref.startsWith('refs/tags/');
+    const refName = isTag ? payload.ref.replace('refs/tags/', '') : payload.ref.replace('refs/heads/', '');
 
     // 2. Find if we are tracking this repository.
     // This is inefficient for a large number of repos, but for the expected scale of this
@@ -43,16 +44,39 @@ export const POST: RequestHandler = async ({ request }) => {
       return json({ message: 'Repository not tracked' }, { status: 200 });
     }
 
-    // 3. Check if the push was to the specific branch we are tracking.
-    if (repo.branch !== branch) {
+    // 3. Check trigger configuration
+    if (repo.trigger === 'manual') {
       console.log(
-        `[Webhook] Ignoring push to non-tracked branch '${branch}' for repo: ${repo.name}`
+        `[Webhook] Ignoring push for repo ${repo.name} - trigger is set to manual only`
       );
-      return json({ message: `Ignoring push to non-tracked branch: ${branch}` }, { status: 200 });
+      return json({ message: 'Repository is configured for manual builds only' }, { status: 200 });
+    }
+
+    // 4. Check if the event matches the trigger configuration
+    if (repo.trigger === 'push' && isTag) {
+      console.log(
+        `[Webhook] Ignoring tag push for repo ${repo.name} - trigger is set to push only`
+      );
+      return json({ message: 'Repository is configured for push events only' }, { status: 200 });
+    }
+
+    if (repo.trigger === 'tag' && !isTag) {
+      console.log(
+        `[Webhook] Ignoring branch push for repo ${repo.name} - trigger is set to tag only`
+      );
+      return json({ message: 'Repository is configured for tag events only' }, { status: 200 });
+    }
+
+    // 5. For push triggers, check if the push was to the specific branch we are tracking.
+    if (repo.trigger === 'push' && repo.branch !== refName) {
+      console.log(
+        `[Webhook] Ignoring push to non-tracked branch '${refName}' for repo: ${repo.name}`
+      );
+      return json({ message: `Ignoring push to non-tracked branch: ${refName}` }, { status: 200 });
     }
 
     console.log(
-      `[Webhook] Received valid push event for tracked repo: ${repo.name} (Branch: ${branch})`
+      `[Webhook] Received valid ${isTag ? 'tag' : 'push'} event for tracked repo: ${repo.name} (${isTag ? `Tag: ${refName}` : `Branch: ${refName}`})`
     );
 
     // 4. Create a new build task.
